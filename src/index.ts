@@ -1,6 +1,13 @@
+var pdfFiller = require("pdffiller");
 
-export function sayHelloWorld(world: string) {
-  return `Hello ${world}`;
-}
+var sourcePDF = "test/cheque-request-unfilled.pdf";
+var destinationPDF = "test/test_complete.pdf";
 
-console.log(sayHelloWorld("world"));
+var data = {
+  "AreaOfSociety": "Testing",
+};
+
+pdfFiller.fillForm(sourcePDF, destinationPDF, data, function (err: any) {
+  if (err) throw err;
+  console.log("In callback (we're done).");
+});
