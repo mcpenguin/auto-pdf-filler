@@ -1,17 +1,28 @@
 import { config } from "./config";
 import { ChequeRequestPdfFields, ParseReceipt } from "./types/pdfEntries";
 
-var pdfFiller = require("pdffiller");
+let pdfFiller = require("pdffiller");
 
 function makePdfName(pdfsFolderName: string, sourcePdfName: string, extension: string): string {
   return `${pdfsFolderName}/${sourcePdfName}-${extension}.pdf`;
 }
 
-var sourcePDF = `${config.pdfsFolderName}/${config.originalPdfFilename}`;
-var destinationPDF = makePdfName(
-  config.pdfsFolderName, config.sourcePdfFilename, "extension-test");
+const sourcePDF = `${config.pdfsFolderName}/${config.originalPdfFilename}`;
 
-var data: ChequeRequestPdfFields = {
+function MakeFilledPdf(data: ChequeRequestPdfFields, extension: string) {
+  for (let i in data.Receipts) {
+    data = {...data, ...ParseReceipt(data.Receipts[i], parseInt(i)+1)};
+  }
+
+  const destinationPDF = makePdfName(config.pdfsFolderName, config.sourcePdfFilename, extension);
+  
+  pdfFiller.fillForm(sourcePDF, destinationPDF, data, function (err: any) {
+    if (err) throw err;
+    console.log(`Successfully created filled pdf: ${destinationPDF}`);
+  });
+}
+
+let data: ChequeRequestPdfFields = {
   AreaOfSociety: "TestingAreaOfSociety",
   Date: "TestingDate",
   ChequePayableToName: "TestingCheque",
@@ -38,11 +49,4 @@ var data: ChequeRequestPdfFields = {
   TotalDollars: "TestingTotalDollars"
 };
 
-for (let i in data.Receipts) {
-  data = {...data, ...ParseReceipt(data.Receipts[i], parseInt(i)+1)};
-}
-
-pdfFiller.fillForm(sourcePDF, destinationPDF, data, function (err: any) {
-  if (err) throw err;
-  console.log("In callback (we're done).");
-});
+MakeFilledPdf(data, "extension-test");
