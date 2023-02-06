@@ -1,20 +1,20 @@
-class Receipt {
+export class Receipt {
   ReceiptDescription!: string;
   Amount!: string;
-
-  Parse(n: number) {
-    var result: any = {};
-    result[`ReceiptDescription${n}`] = this.ReceiptDescription;
-    result[`Amount${n}`] = this.Amount;
-    return result;
-  }
 }
 
-export default class ChequeRequestPdfFields {
+export function ParseReceipt(receipt: Receipt, n: number) {
+  var result: any = {};
+  result[`ReceiptDescription${n}`] = receipt.ReceiptDescription;
+  result[`Amount${n}`] = receipt.Amount;
+  return result;
+}
+
+export class ChequeRequestPdfFields {
   AreaOfSociety!: string;
   Date!: string;
   ChequePayableToName!: string;
-  WatIamId!: string;
+  WatIamID!: string;
   MailingAddress!: string;
   BudgetLineItem!: string;
   EventID!: string;
